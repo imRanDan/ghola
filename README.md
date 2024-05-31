@@ -30,7 +30,6 @@ Ensure Ollama is installed on your system and accessible via the command line. F
 Run the development server:
 
 ```bash
-Copy code
 npm run dev
 ```
 Open the app in your browser:
