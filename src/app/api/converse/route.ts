@@ -6,7 +6,7 @@ export async function POST(request: Request) {
 
   try {
     // Run the model and interact with it
-    const childProcess = exec(`ollama run llama3`);
+    const childProcess = exec(`ollama run custom-model`);
 
     messages.forEach((message) => {
       childProcess.stdin.write(`${message.sender}: ${message.text}\n`);

@@ -1,11 +1,11 @@
 import { useState } from 'react';
 
 const Conversation = ({ model }) => {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<{ sender: string, text: string }[]>([]);
   const [userInput, setUserInput] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
@@ -78,6 +78,7 @@ const Conversation = ({ model }) => {
 };
 
 export default Conversation;
+
 
 
 
