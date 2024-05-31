@@ -1,45 +1,12 @@
-// src/app/api/ollama/route.ts
 import { NextResponse } from 'next/server';
-import { exec, execSync } from 'child_process';
-import fs from 'fs';
+import { exec } from 'child_process';
 
 export async function POST(request: Request) {
-  const { model, temperature, systemMessage, messages } = await request.json();
-
-  // Create Modelfile content
-  const modelfileContent = `
-FROM ${model}
-
-# set the temperature to ${temperature} [higher is more creative, lower is more coherent]
-PARAMETER temperature ${temperature}
-
-# set the system message
-SYSTEM """
-${systemMessage}
-"""
-`;
-
-  // Write the Modelfile
-  try {
-    fs.writeFileSync('CustomModelfile', modelfileContent);
-  } catch (err) {
-    console.error('Error creating Modelfile:', err);
-    return NextResponse.json({ error: 'Error creating Modelfile' }, { status: 500 });
-  }
-
-  console.log('Modelfile created successfully');
+  const { model, messages } = await request.json();
 
   try {
-    // Pull the model
-    const pullOutput = execSync(`ollama pull ${model}`).toString();
-    console.log('Model pulled successfully:', pullOutput);
-
-    // Create the model
-    const createOutput = execSync(`ollama create custom-model -f ./CustomModelfile`).toString();
-    console.log('Model created successfully:', createOutput);
-
     // Run the model and interact with it
-    const childProcess = exec(`ollama run custom-model`);
+    const childProcess = exec(`ollama run llama3`);
 
     messages.forEach((message) => {
       childProcess.stdin.write(`${message.sender}: ${message.text}\n`);
@@ -75,6 +42,5 @@ ${systemMessage}
     return NextResponse.json({ error: error.message, stack: error.stack }, { status: 500 });
   }
 }
-
 
 
