@@ -41,8 +41,9 @@ You are ${name}. ${personality}
       <h1 className="text-2xl font-bold mb-4">Create Ollama Model</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
+        
           <label htmlFor="model" className="block text-sm font-medium text-gray-700">
-            Model
+            Model 
           </label>
           <input
             id="model"
@@ -53,9 +54,10 @@ You are ${name}. ${personality}
             required
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           />
+                    <p>Need help picking a <a target="_blank" class="underline text-red-50" href='https://ollama.com/library'> model?</a> Type in the name and ghola will pull and create a custom model for you!</p>
         </div>
         <div>
-          <label htmlFor="temperature" className="block text-sm font-medium text-gray-700">
+          {/* <label htmlFor="temperature" className="block text-sm font-medium text-gray-700">
             Temperature
           </label>
           <input
@@ -66,7 +68,7 @@ You are ${name}. ${personality}
             onChange={(e) => setTemperature(Number(e.target.value))}
             required
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-          />
+          /> */}
         </div>
         <div>
           <label htmlFor="name" className="block text-sm font-medium text-gray-700">

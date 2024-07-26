@@ -23,7 +23,7 @@ const Conversation = ({ model }) => {
       const data = await response.json();
 
       if (response.ok) {
-        setMessages([...messages, newMessage, { sender: 'bot', text: data.output }]);
+        setMessages([...messages, newMessage, { sender: 'ghola', text: data.output }]);
         setUserInput('');
       } else {
         setError(data.error || 'An unexpected error occurred');
@@ -36,7 +36,7 @@ const Conversation = ({ model }) => {
 
   return (
     <div className="container mx-auto p-4">
-      <h2 className="text-xl font-bold mb-4">Conversation with {model}</h2>
+      <h2 className="text-xl font-bold mb-4">Conversation with your ghola</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="userInput" className="block text-sm font-medium text-gray-700">

@@ -48,7 +48,7 @@ You are ${name}. ${personality}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="model" className="block text-sm font-medium text-gray-700">
-            Model
+            Model 
           </label>
           <input
             id="model"

@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     });
 
     childProcess.stderr.on('data', (data) => {
-      console.error(`stderr: ${data}`);
+      console.error(`loading ${data}`);
     });
 
     return new Promise((resolve) => {
