@@ -1,51 +1,62 @@
 import { useState } from 'react';
+import useForm from '../hooks/useForm';
 
 const ModelForm = () => {
-  const [model, setModel] = useState('llama3');
-  const [temperature, setTemperature] = useState(1);
-  const [name, setName] = useState('');
-  const [personality, setPersonality] = useState('');
-  const [messages, setMessages] = useState<{ sender: string, text: string }[]>([]);
-  const [userInput, setUserInput] = useState('');
-  const [error, setError] = useState('');
+  const { values, handleChange, handleSubmit, error } = useForm(
+    { model: 'llama3', temperature: 1, name: '', personality: '', userInput: '' },
+    async (formValues) => {
+      // Your submission logic here
+    }
+  );
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const [messages, setMessages] = useState<{ sender: string, text: string }[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmitForm = async (e: React.FormEvent, isCreateModel: boolean) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
     const systemMessage = `
-You are ${name}. ${personality}
+You are ${values.name}. ${values.personality}
 `;
 
-    const newMessage = { sender: 'user', text: userInput };
+    const newMessage = { sender: 'user', text: values.userInput };
+
+    const endpoint = isCreateModel ? '/api/createModel' : '/api/ollama';
+    const body = isCreateModel 
+      ? JSON.stringify({ model: values.model, temperature: values.temperature, systemMessage }) 
+      : JSON.stringify({ model: values.model, temperature: values.temperature, systemMessage, messages: [...messages, newMessage] });
 
     try {
-      const response = await fetch('/api/ollama', {
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ model, temperature, systemMessage, messages: [...messages, newMessage] }),
+        body,
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        setMessages([...messages, newMessage, { sender: 'bot', text: data.output }]);
-        setUserInput('');
+        setMessages([...messages, newMessage, { sender: isCreateModel ? 'bot' : 'ghola', text: data.output }]);
+        values.userInput = '';
       } else {
         setError(data.error || 'An unexpected error occurred');
       }
     } catch (err) {
       setError('Failed to fetch data from the server.');
       console.error('Fetch error:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Customize and Run Ollama Model</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={(e) => handleSubmitForm(e, false)} className="space-y-4">
         <div>
           <label htmlFor="model" className="block text-sm font-medium text-gray-700">
             Model 
@@ -54,8 +65,8 @@ You are ${name}. ${personality}
             id="model"
             name="model"
             type="text"
-            value={model}
-            onChange={(e) => setModel(e.target.value)}
+            value={values.model}
+            onChange={handleChange}
             required
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           />
@@ -68,8 +79,8 @@ You are ${name}. ${personality}
             id="temperature"
             name="temperature"
             type="number"
-            value={temperature}
-            onChange={(e) => setTemperature(Number(e.target.value))}
+            value={values.temperature}
+            onChange={handleChange}
             required
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           />
@@ -82,8 +93,8 @@ You are ${name}. ${personality}
             id="name"
             name="name"
             type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={values.name}
+            onChange={handleChange}
             required
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           />
@@ -96,8 +107,8 @@ You are ${name}. ${personality}
             id="personality"
             name="personality"
             rows={4}
-            value={personality}
-            onChange={(e) => setPersonality(e.target.value)}
+            value={values.personality}
+            onChange={handleChange}
             required
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           />
@@ -110,17 +121,18 @@ You are ${name}. ${personality}
             id="userInput"
             name="userInput"
             rows={2}
-            value={userInput}
-            onChange={(e) => setUserInput(e.target.value)}
+            value={values.userInput}
+            onChange={handleChange}
             required
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           />
         </div>
         <button
           type="submit"
+          disabled={loading}
           className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
-          Send
+          {loading ? 'Sending...' : 'Send'}
         </button>
       </form>
       <h2 className="text-xl font-bold mt-4">Conversation:</h2>

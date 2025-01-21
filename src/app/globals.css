@@ -84,3 +84,19 @@
   body {
     background-color: var(--beaver);
   }
+
+/* styles.css or your component's CSS file */
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #4f46e5; /* Change this color to match your theme */
+  border-radius: 50%;
+  width: 24px; /* Size of the spinner */
+  height: 24px; /* Size of the spinner */
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

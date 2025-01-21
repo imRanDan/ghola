@@ -1,13 +1,15 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 const Conversation = ({ model }) => {
   const [messages, setMessages] = useState<{ sender: string, text: string }[]>([]);
   const [userInput, setUserInput] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
     const newMessage = { sender: 'user', text: userInput };
 
@@ -23,7 +25,8 @@ const Conversation = ({ model }) => {
       const data = await response.json();
 
       if (response.ok) {
-        setMessages([...messages, newMessage, { sender: 'ghola', text: data.output }]);
+        const botMessage = { sender: model, text: data.output };
+        setMessages([...messages, newMessage, botMessage]);
         setUserInput('');
       } else {
         setError(data.error || 'An unexpected error occurred');
@@ -31,6 +34,8 @@ const Conversation = ({ model }) => {
     } catch (err) {
       setError('Failed to fetch data from the server.');
       console.error('Fetch error:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -60,13 +65,19 @@ const Conversation = ({ model }) => {
         </button>
       </form>
       <h2 className="text-xl font-bold mt-4">Conversation:</h2>
-      <div className="p-4 bg-gray-100 rounded-md whitespace-pre-wrap">
+      <div className="p-4 bg-gray-100 rounded-md whitespace-pre-wrap overflow-y-auto" style={{ maxHeight: '400px' }}>
         {messages.map((message, index) => (
           <div key={index} className={message.sender === 'user' ? 'text-blue-600' : 'text-green-600'}>
             <strong>{message.sender}:</strong> {message.text}
           </div>
         ))}
       </div>
+      {loading && (
+        <div className="mt-4 p-4 flex items-center">
+          <div className="spinner"></div>
+          <p className="ml-2">Loading...</p>
+        </div>
+      )}
       {error && (
         <div className="mt-4 p-4 bg-red-100 text-red-700 rounded-md">
           <h3 className="text-lg font-bold">Error:</h3>

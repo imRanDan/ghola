@@ -25,7 +25,7 @@ You are ${name}. ${personality}
       });
 
       if (response.ok) {
-        onModelCreated(model);
+        onModelCreated(name);
       } else {
         const data = await response.json();
         setError(data.error || 'An unexpected error occurred');
