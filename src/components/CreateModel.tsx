@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 const CreateModel = ({ onModelCreated }) => {
-  const [model, setModel] = useState('llama3'); // Correct model name
+  const [model, setModel] = useState('llama3.2:1b'); // Correct model name
   const [temperature, setTemperature] = useState(1);
   const [name, setName] = useState('');
   const [personality, setPersonality] = useState('');
@@ -40,7 +40,7 @@ You are ${name}. ${personality}
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Create Ollama Model</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
+        {/* <div>
         
           <label htmlFor="model" className="block text-sm font-medium text-gray-700">
             Model 
@@ -55,7 +55,7 @@ You are ${name}. ${personality}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           />
                     <p>Need help picking a <a target="_blank" class="underline text-red-50" href='https://ollama.com/library'> model?</a> Type in the name and ghola will pull and create a custom model for you!</p>
-        </div>
+        </div> */}
         <div>
           {/* <label htmlFor="temperature" className="block text-sm font-medium text-gray-700">
             Temperature

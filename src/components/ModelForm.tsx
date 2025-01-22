@@ -1,16 +1,46 @@
-import { useState } from 'react';
-import useForm from '../hooks/useForm';
+import React from 'react';
+import { useForm } from '../hooks/useForm';
+import { exec } from 'child_process';
 
 const ModelForm = () => {
   const { values, handleChange, handleSubmit, error } = useForm(
-    { model: 'llama3', temperature: 1, name: '', personality: '', userInput: '' },
+    { model: 'llama3.2:1b', temperature: 1, name: '', personality: '', userInput: '' },
     async (formValues) => {
-      // Your submission logic here
+      console.log('Using model:', formValues.model);
+      try {
+        // Pull the model before proceeding
+        await pullModel(formValues.model);
+        
+        // Your submission logic here
+        console.log('Model created with values:', formValues);
+        // Add your logic to create the model
+      } catch (err) {
+        console.error('Failed to pull model:', err);
+      }
     }
   );
 
-  const [messages, setMessages] = useState<{ sender: string, text: string }[]>([]);
-  const [loading, setLoading] = useState(false);
+  const pullModel = (modelName: string) => {
+    return new Promise((resolve, reject) => {
+      exec(`ollama pull ${modelName}`, (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Error pulling model: ${error.message}`);
+          reject(error);
+          return;
+        }
+        if (stderr) {
+          console.error(`stderr: ${stderr}`);
+          reject(new Error(stderr));
+          return;
+        }
+        console.log(`Model pulled: ${stdout}`);
+        resolve(stdout);
+      });
+    });
+  };
+
+  const [messages, setMessages] = React.useState<{ sender: string, text: string }[]>([]);
+  const [loading, setLoading] = React.useState(false);
 
   const handleSubmitForm = async (e: React.FormEvent, isCreateModel: boolean) => {
     e.preventDefault();
